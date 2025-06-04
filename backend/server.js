@@ -1,20 +1,27 @@
+import express from "express";
 import dotenv from "dotenv";
+import path from "path";
+import app from "./src/app.js";
+import { fileURLToPath } from "url";
+
+// Load env vars
 dotenv.config();
 
-import app from "./src/app.js";
+// Fix for __dirname in ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-import path from "path";
-
-const __dirname = path.resolve();
-
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
-if (process.env.NODE_ENV==="production"){
+// Serve frontend in production
+if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
   app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
-  })
+    res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
+  });
 }
